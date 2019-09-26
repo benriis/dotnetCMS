@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using WoWScriptApi.Models;
@@ -43,7 +44,7 @@ namespace WoWScriptApi.Controllers
                 return BadRequest("Invalid client request");
             }
 
-            var userFromDb = await _context.Users.SingleOrDefaultAsync(u => u.Username == user.Username);
+            User userFromDb = await _context.Users.SingleOrDefaultAsync(u => u.Username == user.Username);
             
             if (userFromDb != null)
             {
@@ -55,19 +56,25 @@ namespace WoWScriptApi.Controllers
                 new Claim(ClaimTypes.NameIdentifier, userFromDb.Id.ToString())
             };
 
+            // var claims = new List<Claim>();
+            // claims.Add(new Claim(ClaimTypes.NameIdentifier, userFromDb.Id.ToString()));
+
             if (verifyPassword == PasswordVerificationResult.Success)
             {
-                var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(SIGNING_KEY));
+                var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("Denne penis er lang fordi jeg ved ikke hvad jeg skal gøre"));
                 var signingCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
 
                 var tokenOptions = new JwtSecurityToken(
-                        issuer: "https://localhost:44348",
-                        audience: "https://localhost:44348",
-                        claims,
-                        expires: DateTime.Now.AddMinutes(60),
+                        issuer: "https://localhost:5001",
+                        audience: "https://localhost:5001",
+                        claims: claims,
+                        expires: DateTime.Now.AddDays(30),
                         signingCredentials: signingCredentials
                     );
 
+                Debug.WriteLine("=================");
+                Debug.WriteLine(signingCredentials);
+                Debug.WriteLine("=================");
                 var tokenString = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
                 return Ok(new { Token = tokenString, Name = user.Username });
             } else

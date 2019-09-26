@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
 using WoWScriptApi.Models;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -121,6 +122,8 @@ namespace WoWScriptApi.Controllers
                 Author = Author,
                 CreatedAt = DateTime.Now
             };
+
+            Debug.WriteLine(item.ClassName);
 
             _context.ScriptItems.Add(scriptItem);
 

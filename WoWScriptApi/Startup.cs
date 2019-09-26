@@ -14,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.IdentityModel.Logging;
 using WoWScriptApi.Helpers;
 using WoWScriptApi.Models;
 using WoWScriptApi.Services;
@@ -57,10 +58,10 @@ namespace WoWScriptApi
                         ValidateAudience = false,
                         ValidateLifetime = true,
                         ValidateIssuerSigningKey = true,
-
-                        ValidIssuer = "https://localhost:44348",
-                        ValidAudience = "https://localhost:44348",
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(SIGNING_KEY))
+                        ClockSkew = TimeSpan.Zero,
+                        ValidIssuer = "https://localhost:5001",
+                        ValidAudience = "https://localhost:5001",
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("Denne penis er lang fordi jeg ved ikke hvad jeg skal gøre"))
                     };
             });
 
@@ -73,6 +74,7 @@ namespace WoWScriptApi
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+		IdentityModelEventSource.ShowPII = true;
             }
             else
             {
